@@ -11,6 +11,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
+// 根路径路由 - 服务主页
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 // 读取视频数据
 app.get('/api/videos', (req, res) => {
     try {
