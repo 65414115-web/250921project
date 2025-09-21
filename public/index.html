@@ -188,6 +188,8 @@
             padding-bottom: 56.25%; /* 16:9 比例 */
             overflow: hidden;
             background: var(--secondary-color);
+            cursor: pointer;
+            border-radius: 8px;
         }
 
         .video-container iframe {
@@ -197,7 +199,43 @@
             width: 100%;
             height: 100%;
             border: none;
-            border-radius: 0;
+            border-radius: 8px;
+        }
+
+        .video-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.3s ease;
+            z-index: 2;
+        }
+
+        .play-button:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .video-title-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 20px 10px 10px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1;
         }
 
         .card-content {
@@ -451,6 +489,31 @@
             }
         }
 
+        function extractBVID(embedCode) {
+            const match = embedCode.match(/bvid=([^&]+)/);
+            return match ? match[1] : null;
+        }
+
+        function getBilibiliCover(bvid) {
+            // 使用B站默认封面格式，实际上应该通过API获取
+            return `https://i2.hdslb.com/bfs/archive/${bvid.slice(2)}.jpg`;
+        }
+
+        function loadBilibiliVideo(container, embedCode, bvid) {
+            const iframe = document.createElement('iframe');
+            iframe.src = `//player.bilibili.com/player.html?bvid=${bvid}&autoplay=1`;
+            iframe.width = '100%';
+            iframe.height = '100%';
+            iframe.frameBorder = '0';
+            iframe.allowFullscreen = true;
+            iframe.scrolling = 'no';
+            iframe.style.borderRadius = '8px';
+
+            container.innerHTML = '';
+            container.appendChild(iframe);
+            container.onclick = null;
+        }
+
         function displayVideos(videos) {
             const grid = document.getElementById('videoGrid');
 
@@ -458,9 +521,22 @@
                 const card = document.createElement('div');
                 card.className = 'video-card';
 
+                const bvid = extractBVID(video.embedCode);
+                const coverUrl = `https://images.weserv.nl/?url=i2.hdslb.com/bfs/archive/${bvid ? bvid.slice(2) : 'default'}.jpg&w=640&h=360&fit=cover&default=https://via.placeholder.com/640x360/f1f5f9/64748b?text=视频封面`;
+
                 card.innerHTML = `
-                    <div class="video-container">
-                        ${video.embedCode}
+                    <div class="video-container" onclick="loadBilibiliVideo(this, '${video.embedCode.replace(/'/g, "\\'").replace(/"/g, "&quot;")}', '${bvid}')">
+                        <img src="${coverUrl}" alt="视频封面" class="video-cover"
+                             onerror="this.src='https://via.placeholder.com/640x360/f1f5f9/64748b?text=视频封面'">
+                        <div class="play-button">
+                            <svg width="60" height="60" viewBox="0 0 60 60">
+                                <circle cx="30" cy="30" r="30" fill="rgba(0,0,0,0.7)"/>
+                                <polygon points="22,18 22,42 42,30" fill="white"/>
+                            </svg>
+                        </div>
+                        <div class="video-title-overlay">
+                            ${video.title}
+                        </div>
                     </div>
                     <div class="card-content">
                         <h3 class="video-title">${video.title}</h3>
@@ -484,6 +560,7 @@
             });
         }
 
+        window.loadBilibiliVideo = loadBilibiliVideo;
         document.addEventListener('DOMContentLoaded', loadVideos);
     </script>
 </body>
