@@ -4,22 +4,20 @@ const path = require('path');
 const cors = require('cors');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // 在 Vercel 上使用 process.env.PORT
 
 // 中间件
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
 
-// 根路径路由 - 服务主页
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+// 关键步骤：告诉 Express 服务 public 文件夹里的所有静态文件
+// Vercel 部署后，它会自动把这些文件提供给浏览器
+app.use(express.static(path.join(__dirname, 'public')));
 
-// 读取视频数据
+// 读取视频数据 (保持不变)
 app.get('/api/videos', (req, res) => {
     try {
-        const videosPath = path.join(__dirname, 'videos.js');
+        const videosPath = path.join(__dirname, 'public', 'videos.js'); // 注意路径已修改
         const videosContent = fs.readFileSync(videosPath, 'utf8');
 
         // 提取 videosData 对象
@@ -35,7 +33,7 @@ app.get('/api/videos', (req, res) => {
     }
 });
 
-// 保存视频数据
+// 保存视频数据 (保持不变)
 app.post('/api/videos', (req, res) => {
     try {
         const videosData = req.body;
@@ -48,7 +46,7 @@ app.post('/api/videos', (req, res) => {
 const videosData = ${JSON.stringify(videosData, null, 4)};`;
 
         // 写入文件
-        const videosPath = path.join(__dirname, 'videos.js');
+        const videosPath = path.join(__dirname, 'public', 'videos.js'); // 注意路径已修改
         fs.writeFileSync(videosPath, jsContent, 'utf8');
 
         res.json({ success: true, message: '视频数据保存成功' });
