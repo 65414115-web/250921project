@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>直男山禾视频汇总</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #6366f1;
+            --primary-light: #a5b4fc;
+            --primary-dark: #4338ca;
+            --secondary-color: #f1f5f9;
+            --accent-color: #f59e0b;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --background: #ffffff;
+            --surface: #f8fafc;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--surface) 0%, #f1f5f9 100%);
+            min-height: 100vh;
+            padding: 3rem 1.5rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            border-radius: 2px;
+        }
+
+        .social-links {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--background);
+            border: 2px solid var(--border-color);
+            border-radius: 2rem;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .social-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .social-link svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .social-link:hover svg {
+            transform: scale(1.1);
+        }
+
+        .social-link.bilibili:hover {
+            border-color: #00A1D6;
+            color: #00A1D6;
+        }
+
+        .social-link.xiaohongshu:hover {
+            border-color: #FF2442;
+            color: #FF2442;
+        }
+
+        .social-link.douyin:hover {
+            border-color: #000000;
+            color: #000000;
+        }
+
+        .social-link.youtube:hover {
+            border-color: #FF0000;
+            color: #FF0000;
+        }
+
+        h1 {
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -0.025em;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .video-card {
+            background: var(--background);
+            border-radius: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .video-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-12px) rotate(0.5deg);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .video-card:hover::before {
+            opacity: 1;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 比例 */
+            overflow: hidden;
+            background: var(--secondary-color);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 0;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .video-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 0.1rem;
+            transition: color 0.3s ease;
+            min-height: 2.8em; /* 再次减小固定高度 */
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .video-card:hover .video-title {
+            color: var(--primary-color);
+        }
+
+        .video-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 3em; /* 固定高度，确保2行 */
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: auto;
+            padding-top: 0.5rem;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            min-width: 160px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-materials {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-materials:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, var(--primary-dark), #312e81);
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.125rem;
+            padding: 4rem 1.25rem;
+        }
+
+        .error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            margin: 1.25rem 0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* 添加光影效果 */
+        .video-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(99, 102, 241, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            border-radius: 1.5rem;
+        }
+
+        .video-card:hover::after {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 2rem 1rem;
+            }
+
+            .social-links {
+                gap: 1rem;
+                margin-top: 1.5rem;
+            }
+
+            .social-link {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.85rem;
+            }
+
+            .social-link svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .video-card {
+                border-radius: 1.25rem;
+            }
+
+            .video-container {
+                padding-bottom: 56.25%; /* 保持16:9比例 */
+            }
+
+            .card-content {
+                padding: 1.25rem;
+            }
+
+            .video-title {
+                font-size: 1.05rem;
+                margin-bottom: 0.2rem;
+                min-height: 2.8em; /* 移动端稍小一些 */
+            }
+
+            .video-description {
+                font-size: 0.85rem;
+                margin-bottom: 1.25rem;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                height: 3em;
+            }
+
+            .card-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .btn {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script src="./videos.js"></script>
+    <div class="container">
+        <header>
+            <h1>直男山禾 资料汇总</h1>
+            <p class="subtitle">B站视频配套学习资料</p>
+
+            <div class="social-links">
+                <a href="https://space.bilibili.com/3494362365299578?spm_id_from=333.337.0.0" target="_blank" class="social-link bilibili">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .356-.124.657-.373.906l-1.174 1.12zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.789 1.894v7.52c.02.764.283 1.396.789 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.497.769-1.129.789-1.893v-7.52c-.02-.765-.283-1.396-.789-1.894-.507-.497-1.134-.755-1.88-.773H5.333zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z"/>
+                    </svg>
+                    B站
+                </a>
+
+                <a href="https://www.xiaohongshu.com/user/profile/61fd5b82000000001000aa1d?xsec_token=YBQJv7G__oP4IE_5Ayc7pmw-NtFP-xfiUOvYYsqP7n_b4=&xsec_source=app_share&xhsshare=CopyLink&shareRedId=OD5ENElJNUI2NzUyOTgwNjc8OTk4PjY8&apptime=1758426152&share_id=8413d3f9685c463fb57bbe178eb92a5d" target="_blank" class="social-link xiaohongshu">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        <path d="M9 9h6v6H9z"/>
+                    </svg>
+                    小红书
+                </a>
+
+                <a href="https://v.douyin.com/MiKw2zVKNFQ/" target="_blank" class="social-link douyin">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.5 7.5V4h1.5v3.5h1V4h1.5v3.5h.5a2 2 0 0 1 2 2v.5h-1.5V9.5a.5.5 0 0 0-.5-.5h-.5V12a2 2 0 0 1-2 2H9.5a2 2 0 0 1-2-2V9h-.5a.5.5 0 0 0-.5.5v.5H5V9.5a2 2 0 0 1 2-2h.5V4H9v3.5h1V4h1.5v3.5h1zm-3 6a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-3H9.5v3z"/>
+                    </svg>
+                    抖音
+                </a>
+
+                <a href="https://youtube.com/@zhinanshanhe?si=Bu7PbHuL4acMaVKV" target="_blank" class="social-link youtube">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                    YouTube
+                </a>
+            </div>
+        </header>
+
+        <div id="loading" class="loading">
+            正在加载视频列表...
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            加载失败，请刷新页面重试
+        </div>
+
+        <div id="videoGrid" class="video-grid" style="display: none;">
+        </div>
+    </div>
+
+    <script>
+        function loadVideos() {
+            try {
+                // 按order字段排序（数字越小越靠前）
+                const sortedVideos = [...videosData.videos].sort((a, b) => (a.order || 999) - (b.order || 999));
+                displayVideos(sortedVideos);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('videoGrid').style.display = 'grid';
+            } catch (error) {
+                console.error('Error loading videos:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        function displayVideos(videos) {
+            const grid = document.getElementById('videoGrid');
+
+            videos.forEach(video => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+
+                card.innerHTML = `
+                    <div class="video-container">
+                        ${video.embedCode}
+                    </div>
+                    <div class="card-content">
+                        <h3 class="video-title">${video.title}</h3>
+                        <p class="video-description">${video.description}</p>
+                        <div class="card-actions">
+                            <a href="${video.feishuUrl}" target="_blank" class="btn btn-materials">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2"/>
+                                    <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                获取资料
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadVideos);
+    </script>
+</body>
+</html>
